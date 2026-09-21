@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Frontend Architecture</title>
+<style>
+  body { font-family: -apple-system, sans-serif; padding: 25px; color: #0f172a; font-size: 10pt; line-height: 1.6; }
+  h1 { color: #0d3880; font-size: 18pt; border-bottom: 2px solid #0d3880; padding-bottom: 5px; }
+  h2 { color: #2563eb; font-size: 13pt; margin-top: 15px; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 8.5pt; }
+  th { background: #0d3880; color: white; padding: 6px; text-align: left; }
+  td { border: 1px solid #cbd5e1; padding: 5px; }
+  tr:nth-child(even) td { background: #f8fafc; }
+</style>
+</head>
+<body>
+  <h1>MUIT Event Management System — Frontend Architecture</h1>
+  <p><strong>Subsystem:</strong> Client Presentation Layer (React 18 SPA) • <strong>Directory:</strong> <code>client/</code></p>
+  <h2>1. Technology Stack</h2>
+  <table>
+    <tr><th>Technology</th><th>Category</th><th>Functional Description</th></tr>
+    <tr><td>React 18</td><td>Core Framework</td><td>Component tree, Context API, Hooks, State lifecycle</td></tr>
+    <tr><td>Tailwind CSS</td><td>Styling</td><td>Glassmorphism, custom responsive layouts, micro-animations</td></tr>
+    <tr><td>Vite 5</td><td>Tooling</td><td>Fast HMR and production bundle optimizer</td></tr>
+    <tr><td>qrcode.react</td><td>QR Engine</td><td>Vector SVG QR code generator with error correction Level H</td></tr>
+    <tr><td>html5-qrcode</td><td>Camera Scanner</td><td>Webcam video feed decoder for gate check-in</td></tr>
+    <tr><td>Web Audio API</td><td>Audio Synthesizer</td><td>Dual-tone success chimes and duplicate warning buzzes</td></tr>
+  </table>
+  <h2>2. Key Subsystems</h2>
+  <p>• <strong>Campus Gate Hero Section:</strong> Official gate architecture banner with glowing animated CTA buttons and floating stat cards.<br>
+  • <strong>Student Portal:</strong> 1-Click event registration, dynamic QR passes, digital certificate downloads.<br>
+  • <strong>Organizer Hub:</strong> Live hardware webcam scanner, batch certificate issuance, attendee management.<br>
+  • <strong>Admin Panel:</strong> Global user management, audit logs, system-wide analytics.</p>
+</body>
+</html>

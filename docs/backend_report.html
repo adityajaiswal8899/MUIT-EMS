@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Backend Architecture</title>
+<style>
+  body { font-family: -apple-system, sans-serif; padding: 25px; color: #0f172a; font-size: 10pt; line-height: 1.6; }
+  h1 { color: #15803d; font-size: 18pt; border-bottom: 2px solid #15803d; padding-bottom: 5px; }
+  h2 { color: #166534; font-size: 13pt; margin-top: 15px; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 8.5pt; }
+  th { background: #15803d; color: white; padding: 6px; text-align: left; }
+  td { border: 1px solid #cbd5e1; padding: 5px; }
+  tr:nth-child(even) td { background: #f0fdf4; }
+</style>
+</head>
+<body>
+  <h1>MUIT Event Management System — Backend Architecture</h1>
+  <p><strong>Subsystem:</strong> Application & Logic Layer (Node/Express API) • <strong>Directory:</strong> <code>server/</code></p>
+  <h2>1. Technology Stack</h2>
+  <table>
+    <tr><th>Component</th><th>Technology</th><th>Functional Scope</th></tr>
+    <tr><td>Runtime</td><td>Node.js 18+</td><td>Non-blocking asynchronous server runtime</td></tr>
+    <tr><td>REST Framework</td><td>Express.js</td><td>API routing, middleware chaining, controllers</td></tr>
+    <tr><td>Security</td><td>JWT + Bcrypt</td><td>Stateless role-guarded token authentication</td></tr>
+    <tr><td>Database ODM</td><td>Mongoose 8</td><td>Schema modeling, connection pooling, compound indexing</td></tr>
+  </table>
+  <h2>2. Core Subsystems</h2>
+  <p>• <strong>Gate Attendance Engine (attendanceController.js):</strong> Decodes QR codes and uses unique registration indexing to reject duplicate gate scans with 409 Conflict.<br>
+  • <strong>Certificate Engine (certificateController.js):</strong> Issues verifiable digital certificates to verified attendees with unique verification IDs.<br>
+  • <strong>Role Guard Middleware (middleware/auth.js):</strong> Verifies token signatures and enforces role restrictions (Student, Organizer, Admin).</p>
+</body>
+</html>
