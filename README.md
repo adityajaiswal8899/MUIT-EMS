@@ -88,6 +88,17 @@ npm run dev
 
 See [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) for step-by-step GitHub, MongoDB Atlas and Vercel deployment instructions.
 
+## Current Scope & Future Enhancements
+
+> **Viewport & Device Support:**  
+> Our project is currently responsive for desktop and laptop screens. Mobile responsiveness is part of the future enhancement.
+
+### Planned Roadmap Items:
+- **Mobile Responsiveness & Progressive Web App (PWA):** Mobile-first layouts, collapsible drawer navigation, and installable mobile PWA for student convenience.
+- **Offline Attendance Scanner:** IndexedDB local caching for gate check-ins during weak campus connectivity.
+- **Automated Alerts & Reminders:** Automated email and SMS notifications for registered events and schedule updates.
+- **Payment Gateway Integration:** Support for online registration fee processing for paid workshops and competitions.
+
 ## License
 
 MIT

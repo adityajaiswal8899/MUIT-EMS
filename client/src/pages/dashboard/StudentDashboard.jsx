@@ -14,6 +14,7 @@ import Sidebar from '../../components/layout/Sidebar';
 import QRModal from '../../components/common/QRModal';
 import CertificateView from '../../components/common/CertificateView';
 import FeedbackModal from '../../components/common/FeedbackModal';
+import EventCard from '../../components/common/EventCard';
 import { QRCodeSVG } from 'qrcode.react';
 import {
   LayoutDashboard,
@@ -81,7 +82,7 @@ const StudentDashboard = () => {
         attendanceAPI.getMyAttendance(),
         certificatesAPI.getMyCertificates(),
         feedbackAPI.getMyFeedbacks(),
-        eventsAPI.getEvents({ limit: 4 })
+        eventsAPI.getEvents({ limit: 6 })
       ]);
 
       if (regRes.status === 'fulfilled' && regRes.value.data?.success) {
@@ -147,6 +148,24 @@ const StudentDashboard = () => {
   const upcomingEventsCount = activeRegistrations.filter(
     (r) => r.event && new Date(r.event.date) >= new Date()
   ).length;
+  const registeredEventIds = new Set(
+    registrations.filter((r) => r.status !== 'Cancelled').map((r) => r.event?._id)
+  );
+
+  const handleRegisterEvent = async (event) => {
+    try {
+      const res = await registrationsAPI.register(event._id);
+      if (res.data?.success) {
+        toast.success(res.data.message || 'Successfully registered!');
+        if (res.data.registration) {
+          setSelectedPass(res.data.registration);
+        }
+        fetchStudentData();
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Registration failed');
+    }
+  };
 
   return (
     <div className="flex min-h-[calc(100vh-5rem)] bg-slate-50">
@@ -342,6 +361,59 @@ const StudentDashboard = () => {
                 )}
               </div>
 
+            </div>
+
+            {/* Featured & Upcoming Events Section */}
+            <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
+                <div>
+                  <span className="text-xs font-bold uppercase tracking-wider text-muit-600 bg-muit-50 px-3 py-1 rounded-full border border-muit-100">
+                    Campus Highlights
+                  </span>
+                  <h2 className="text-xl sm:text-2xl font-display font-extrabold text-slate-900 mt-2 flex items-center gap-2">
+                    <Calendar className="w-5 h-5 text-muit-600" />
+                    <span>Featured & Upcoming Events</span>
+                  </h2>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Discover upcoming competitions, workshops, and hackathons open for student registration.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleTabChange('browse-events')}
+                    className="px-4 py-2 rounded-xl text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors"
+                  >
+                    View in Portal
+                  </button>
+                  <Link
+                    to="/events"
+                    className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-muit-700 hover:bg-muit-800 transition-colors flex items-center gap-1.5 shadow-sm"
+                  >
+                    <span>Full Directory</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              </div>
+
+              {recentEvents.length === 0 ? (
+                <div className="text-center py-10 text-slate-400 text-xs space-y-2">
+                  <Calendar className="w-8 h-8 mx-auto text-slate-300" />
+                  <p>No featured events scheduled right now.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {recentEvents.slice(0, 3).map((event) => (
+                    <EventCard
+                      key={event._id}
+                      event={event}
+                      onRegister={handleRegisterEvent}
+                      isRegistered={registeredEventIds.has(event._id)}
+                      userRole={user?.role}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
 
           </div>

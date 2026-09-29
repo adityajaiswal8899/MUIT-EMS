@@ -104,10 +104,95 @@ const seedDatabase = async () => {
 
     console.log('Created Users: Admin, Organizer, Aarav (student), Priya, Rohan, Ananya.');
 
-    // 2. Create the 10 Sample Events (as requested)
-    console.log('Seeding 10 Sample Events...');
+    // 2. Create Sample Events
+    console.log('Seeding Sample Events with Official MUIT Posters...');
 
     const sampleEventsData = [
+      {
+        title: 'Aagaaz 2026: Welcome Batch of 2026',
+        description: 'Welcome Batch of 2026 — A joyful start to Maharishi University of Information Technology Life.\n\nOrganized By: Senior Students of Maharishi School of Engineering & Technology (MSOET), MUIT Lucknow Campus.\n\nCelebrate the beginning of your university journey with vibrant cultural performances, campus traditions, music, interactive team games, and peer mentorship sessions. Open for all newly joined BCA, B.Tech, MCA, and Diploma students!',
+        category: 'Cultural',
+        image: '/images/aagaaz-2026.jpg',
+        date: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
+        startTime: '12:00 PM',
+        endTime: '05:00 PM',
+        duration: '5 Hours',
+        venue: 'Sport Ground, Maharishi University of Information Technology, Lucknow Campus',
+        capacity: 600,
+        registeredCount: 0,
+        registrationDeadline: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000 - 2 * 60 * 60 * 1000),
+        organizer: organizer._id,
+        organizerName: 'Senior Students of MSOET & Cultural Committee',
+        status: 'Registration Open'
+      },
+      {
+        title: 'Badminton Summer Camp 2026',
+        description: 'MUIT Summer Sports Camp — Intensive professional badminton training and conditioning.\n\nCamp Schedule & Timings:\n• Morning Session: 06:00 AM – 08:00 AM\n• Evening Session: 03:00 PM – 06:00 PM\n\nFees & Registration Details:\n• Registration Fee: ₹0/- (Free Registration)\n• College T-Shirt Fee: ₹200/- per T-Shirt (Mandatory for all interested players)\n• Registration Venue: Sports Room\n• T-Shirt Distribution Venue: Sports Room\n• Registration Timing: 2:00 PM to 5:00 PM\n\nContact Persons & Coaches:\n• Arjun Singh (Cricket Coach): +91 83768 92322\n• Gaurav Mishra (Football Coach): +91 98185 38793\n• Alfisha Khan (Sports Coach): +91 98211 57465\n\nInterested players must register immediately. Slots are limited to ensure quality coaching.',
+        category: 'Sports',
+        image: '/images/badminton-camp-2026.jpg',
+        date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+        startTime: '06:00 AM',
+        endTime: '06:00 PM',
+        duration: 'Morning & Evening Sessions',
+        venue: 'Sports Room & Badminton Court, MUIT Noida Campus',
+        capacity: 100,
+        registeredCount: 0,
+        registrationDeadline: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
+        organizer: organizer._id,
+        organizerName: 'Sports Department, MUIT Noida',
+        status: 'Registration Open'
+      },
+      {
+        title: 'Volleyball Summer Camp 2026',
+        description: 'MUIT Summer Sports Camp — Comprehensive volleyball fundamentals, spikes, blocks, and tournament strategy.\n\nCamp Schedule & Timings:\n• Morning Session: 06:00 AM – 08:00 AM\n• Evening Session: 03:00 PM – 06:00 PM\n\nFees & Registration Details:\n• Registration Fee: ₹0/- (Free Registration)\n• College T-Shirt Fee: ₹200/- per T-Shirt (Mandatory for all interested players)\n• Registration Venue: Sports Room\n• T-Shirt Distribution Venue: Sports Room\n• Registration Timing: 2:00 PM to 5:00 PM\n\nContact Persons & Coaches:\n• Arjun Singh (Cricket Coach): +91 83768 92322\n• Gaurav Mishra (Football Coach): +91 98185 38793\n• Alfisha Khan (Sports Coach): +91 98211 57465\n\nInterested players must register immediately. Slots are limited to ensure quality coaching.',
+        category: 'Sports',
+        image: '/images/volleyball-camp-2026.png',
+        date: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
+        startTime: '06:00 AM',
+        endTime: '06:00 PM',
+        duration: 'Morning & Evening Sessions',
+        venue: 'Sports Ground & Volleyball Arena, MUIT Noida Campus',
+        capacity: 100,
+        registeredCount: 0,
+        registrationDeadline: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+        organizer: organizer._id,
+        organizerName: 'Sports Department, MUIT Noida',
+        status: 'Registration Open'
+      },
+      {
+        title: 'Basketball Summer Camp 2026',
+        description: 'MUIT Summer Sports Camp — Elite basketball drills, offensive schemes, fast breaks, and fitness conditioning.\n\nCamp Schedule & Timings:\n• Morning Session: 06:00 AM – 08:00 AM\n• Evening Session: 03:00 PM – 06:00 PM\n\nFees & Registration Details:\n• Registration Fee: ₹0/- (Free Registration)\n• College T-Shirt Fee: ₹200/- per T-Shirt (Mandatory for all interested players)\n• Registration Venue: Sports Room\n• T-Shirt Distribution Venue: Sports Room\n• Registration Timing: 2:00 PM to 5:00 PM\n\nContact Persons & Coaches:\n• Arjun Singh (Cricket Coach): +91 83768 92322\n• Gaurav Mishra (Football Coach): +91 98185 38793\n• Alfisha Khan (Sports Coach): +91 98211 57465\n\nInterested players must register immediately. Slots are limited to ensure quality coaching.',
+        category: 'Sports',
+        image: '/images/basketball-camp-2026.png',
+        date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
+        startTime: '06:00 AM',
+        endTime: '06:00 PM',
+        duration: 'Morning & Evening Sessions',
+        venue: 'Basketball Court & Sports Room, MUIT Noida Campus',
+        capacity: 100,
+        registeredCount: 0,
+        registrationDeadline: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
+        organizer: organizer._id,
+        organizerName: 'Sports Department, MUIT Noida',
+        status: 'Registration Open'
+      },
+      {
+        title: 'Alumni Meet Fiesta 2026: Live Concert by Monali Thakur',
+        description: 'Maharishi University of Information Technology, Lucknow Campus presents the grand Alumni Meet Fiesta 2026!\n\nStar Celebrity Performance:\n"Queen of Hearts" — MONALI THAKUR Live in Concert at MUIT Lucknow!\n\nReunite with university alumni, network with industry pioneers, and immerse yourself in an electrifying musical performance featuring Monali Thakur singing her celebrated Bollywood chartbusters. Open to all students, faculty, and esteemed alumni.',
+        category: 'Cultural',
+        image: '/images/alumni-meet-monali-thakur.png',
+        date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+        startTime: '06:00 PM',
+        endTime: '10:30 PM',
+        duration: '4 Hours 30 Mins',
+        venue: 'Main Central Grounds & Auditorium, MUIT Lucknow Campus',
+        capacity: 1500,
+        registeredCount: 0,
+        registrationDeadline: new Date(Date.now() + 13 * 24 * 60 * 60 * 1000),
+        organizer: organizer._id,
+        organizerName: 'MUIT Alumni Association & Cultural Council',
+        status: 'Registration Open'
+      },
       {
         title: 'Byte Bash: The Technical Quiz Challenge',
         description: 'Organized by Tech-Sutra (A Technical Club Organizing Events to Inspire Students at Maharishi School of Engineering & Technology, MUIT Lucknow).\n\n"THINK. TEST. CONQUER."\nAre you ready to challenge your Tech IQ? Byte Bash is an intensive, high-energy technical quiz challenge designed to test your algorithmic thinking, core computer science fundamentals, data structures, programming logic, and rapid problem-solving acumen.\n\nVenue: MSOET Seminar Room, Sitapur Road, P.O-Maharishi Vidya Mandir, Lucknow (UP) 226013\nReporting Time: 01:00 PM | Duration: 3 Hours 30 Mins\n\nStudent Coordinators:\n• Ms. Soma Tiwari: +91 9555664979\n• Mr. Shubham Singh: +91 9682725882\n\nRegistration is open for all BCA, MCA, and B.Tech engineering students!',
@@ -210,19 +295,20 @@ const seedDatabase = async () => {
         status: 'Registration Open'
       },
       {
-        title: 'AI & Machine Learning Workshop',
-        description: 'Hands-on intensive masterclass on Generative AI, Large Language Models, PyTorch neural networks, and deploying computer vision models on edge devices. Includes certified digital credential upon completion.',
+        title: 'Hands-on Training on Generative AI (AI & Machine Learning Workshop)',
+        description: 'Organised by: Maharishi School of Engineering & Technology (MSOET), Lucknow Campus in association with IQAC.\n\n"HANDS-ON TRAINING ON GENERATIVE AI"\nAn intensive industry-oriented masterclass on Generative AI, Prompt Engineering, Large Language Models (LLMs), neural architectures, and deploying production AI applications.\n\nExpert Guest Trainer:\n• Mr. Ved Prakash (DigiCoders Tech, Lucknow)\n\nKey Details:\n• Date: 24th August 2026\n• Timing: 01:30 PM onwards\n• Venue: Central Computer Lab, Maharishi University, Lucknow Campus\n• Certified Quality Standards: ISO 21001, ISO 29993, ISO 9001, ISO 14001\n\nOpen to all BCA, MCA, and B.Tech computer science and IT students. Practical coding, API keys, and hands-on laboratory exercises included!',
         category: 'Workshop',
-        image: 'https://images.unsplash.com/photo-1677442136019-21780efad99a?w=1200&auto=format&fit=crop&q=80',
-        date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // In 5 days
-        startTime: '10:00 AM',
-        endTime: '04:00 PM',
-        venue: 'Computer Science Lab 3, Block B',
+        image: '/images/generative-ai-workshop.jpg',
+        date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
+        startTime: '01:30 PM',
+        endTime: '05:00 PM',
+        duration: '3 Hours 30 Mins',
+        venue: 'Central Computer Lab, Maharishi University, Lucknow Campus',
         capacity: 120,
         registeredCount: 0,
-        registrationDeadline: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+        registrationDeadline: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
         organizer: organizer._id,
-        organizerName: 'Prof. Rajesh Sharma',
+        organizerName: 'MSOET & IQAC (Trainer: Mr. Ved Prakash)',
         status: 'Registration Open'
       },
       {
