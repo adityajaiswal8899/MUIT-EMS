@@ -32,4 +32,4 @@ const feedbackSchema = new mongoose.Schema(
 // One feedback per student per event
 feedbackSchema.index({ student: 1, event: 1 }, { unique: true });
 
-module.exports = mongoose.model('Feedback', feedbackSchema);
+module.exports = mongoose.model('Feedback', feedbackSchema); 

@@ -165,6 +165,20 @@ function App() {
               }
             />
 
+            {/* Direct Shortcuts to Student QR Event Passes */}
+            <Route
+              path="/my-passes"
+              element={<Navigate to="/dashboard/student?tab=my-qr" replace />}
+            />
+            <Route
+              path="/passes"
+              element={<Navigate to="/dashboard/student?tab=my-qr" replace />}
+            />
+            <Route
+              path="/my-qr"
+              element={<Navigate to="/dashboard/student?tab=my-qr" replace />}
+            />
+
             <Route
               path="/dashboard/organizer"
               element={

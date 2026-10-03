@@ -57,7 +57,7 @@ const seedDatabase = async () => {
 
     // Primary student
     const student = await User.create({
-      name: 'Aarav Verma',
+      name: 'Aditya Jaiswal',
       email: 'student@muit.edu',
       password: 'Password123!',
       phone: '+91 99887 76655',
@@ -102,7 +102,7 @@ const seedDatabase = async () => {
       role: 'student'
     });
 
-    console.log('Created Users: Admin, Organizer, Aarav (student), Priya, Rohan, Ananya.');
+    console.log('Created Users: Admin, Organizer, Aditya (student), Priya, Rohan, Ananya.');
 
     // 2. Create Sample Events
     console.log('Seeding Sample Events with Official MUIT Posters...');
@@ -449,10 +449,34 @@ const seedDatabase = async () => {
 
     const pastEvent1 = createdEvents.find(e => e.title.includes('Placement Preparation'));
     const pastEvent2 = createdEvents.find(e => e.title.includes('Cyber Security Seminar'));
+    const aagaazEvent = createdEvents.find(e => e.title.includes('Aagaaz 2026'));
     const upcomingEvent1 = createdEvents.find(e => e.title.includes('Tech Fest 2026'));
     const upcomingEvent2 = createdEvents.find(e => e.title.includes('AI & Machine Learning'));
 
-    // Register Aarav (main student) for upcoming Tech Fest
+    // Register Aditya for Aagaaz 2026 (Official Gate Entry Wristband Pass)
+    if (aagaazEvent) {
+      const aagaazRegId = 'MUIT-PASS-AAGAAZ-2K26';
+      const aagaazQR = await generateQRCodeDataURL({
+        registrationId: aagaazRegId,
+        studentId: student._id.toString(),
+        studentName: student.name,
+        eventId: aagaazEvent._id.toString(),
+        eventTitle: aagaazEvent.title
+      });
+
+      await Registration.create({
+        student: student._id,
+        event: aagaazEvent._id,
+        registrationId: aagaazRegId,
+        qrCode: aagaazQR,
+        status: 'Registered',
+        createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)
+      });
+      aagaazEvent.registeredCount += 1;
+      await aagaazEvent.save();
+    }
+
+    // Register Aditya (main student) for upcoming Tech Fest
     const techFestRegId = 'MUIT-REG-2026-TF001';
     const techFestQR = await generateQRCodeDataURL({
       registrationId: techFestRegId,
@@ -473,7 +497,7 @@ const seedDatabase = async () => {
     upcomingEvent1.registeredCount += 1;
     await upcomingEvent1.save();
 
-    // Register Aarav for AI Workshop
+    // Register Aditya for AI Workshop
     const aiWorkshopRegId = 'MUIT-REG-2026-AI002';
     const aiWorkshopQR = await generateQRCodeDataURL({
       registrationId: aiWorkshopRegId,
@@ -494,7 +518,7 @@ const seedDatabase = async () => {
     upcomingEvent2.registeredCount += 1;
     await upcomingEvent2.save();
 
-    // Register Aarav for Past Event 1 (Placement Workshop) -> attended
+    // Register Aditya for Past Event 1 (Placement Workshop) -> attended
     const placementRegId = 'MUIT-REG-2026-PL003';
     const placementQR = await generateQRCodeDataURL({
       registrationId: placementRegId,
@@ -515,7 +539,7 @@ const seedDatabase = async () => {
     pastEvent1.registeredCount += 1;
     await pastEvent1.save();
 
-    // Register Aarav for Past Event 2 (Cyber Security Seminar) -> attended
+    // Register Aditya for Past Event 2 (Cyber Security Seminar) -> attended
     const cyberRegId = 'MUIT-REG-2026-CS004';
     const cyberQR = await generateQRCodeDataURL({
       registrationId: cyberRegId,

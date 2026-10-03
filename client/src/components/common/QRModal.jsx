@@ -1,11 +1,13 @@
 import React, { useRef, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { X, Download, Printer, ShieldCheck, Calendar, MapPin, Clock, Copy, Check } from 'lucide-react';
+import { X, Download, Printer, ShieldCheck, Calendar, MapPin, Clock, Copy, Check, Ticket, Sparkles } from 'lucide-react';
 import { useToast } from '../../context/ToastContext';
+import WristbandPass from './WristbandPass';
 
 const QRModal = ({ registration, onClose }) => {
   const ticketRef = useRef(null);
   const [copied, setCopied] = useState(false);
+  const [viewMode, setViewMode] = useState('wristband'); // 'wristband' | 'card'
   const toast = useToast();
 
   if (!registration) return null;
@@ -75,142 +77,177 @@ const QRModal = ({ registration, onClose }) => {
     : 'Upcoming Event';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-sm animate-in fade-in">
-      <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in overflow-y-auto">
+      <div className={`relative w-full ${viewMode === 'wristband' ? 'max-w-4xl' : 'max-w-md'} bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200 transition-all duration-200 my-auto`}>
         
         {/* Header Ribbon */}
-        <div className="bg-gradient-to-r from-muit-900 via-muit-800 to-muit-700 text-white p-6 relative">
+        <div className="bg-gradient-to-r from-muit-900 via-rose-900 to-muit-800 text-white p-5 sm:p-6 relative">
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+            className="absolute top-4 right-4 p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors z-20"
           >
             <X className="w-5 h-5" />
           </button>
           
-          <div className="flex items-center gap-3 mb-2">
-            <img 
-              src="/muit_logo.png" 
-              alt="Maharishi University Logo" 
-              className="w-12 h-12 rounded-full bg-white p-0.5 shadow-md shrink-0 ring-2 ring-amber-400/70 object-contain" 
-            />
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider bg-white/20 rounded-full">
-                  MUIT Official Event Pass
-                </span>
-                <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-400 text-slate-950 flex items-center gap-1">
-                  <ShieldCheck className="w-3 h-3" />
-                  Verified
-                </span>
-              </div>
-              <p className="text-xs text-blue-200 mt-0.5">
-                Maharishi University of Information Technology
-              </p>
-            </div>
-          </div>
-          
-          <h2 className="text-xl font-display font-extrabold tracking-tight">
-            {event.title || 'MUIT Campus Event'}
-          </h2>
-        </div>
-
-        {/* Pass Body */}
-        <div ref={ticketRef} className="p-6 space-y-5">
-          
-          {/* QR Code Container with High-Contrast Crisp Vector Render */}
-          <div className="flex flex-col items-center justify-center p-5 bg-gradient-to-b from-blue-50/50 to-slate-50 rounded-2xl border-2 border-dashed border-muit-200">
-            <div className="bg-white p-3.5 rounded-2xl shadow-md border border-slate-200 flex items-center justify-center">
-              <QRCodeSVG
-                id={`qr-svg-${registration.registrationId}`}
-                value={registration.registrationId}
-                size={190}
-                level="H"
-                includeMargin={true}
-                fgColor="#0f172a"
-                bgColor="#ffffff"
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mr-8">
+            <div className="flex items-center gap-3">
+              <img 
+                src="/muit_logo.png" 
+                alt="Maharishi University Logo" 
+                className="w-12 h-12 rounded-full bg-white p-0.5 shadow-md shrink-0 ring-2 ring-amber-400/70 object-contain" 
               />
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider bg-white/20 rounded-full">
+                    Official Entry Pass
+                  </span>
+                  <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-400 text-slate-950 flex items-center gap-1">
+                    <ShieldCheck className="w-3 h-3" />
+                    Verified Gate Pass
+                  </span>
+                </div>
+                <h2 className="text-lg sm:text-xl font-display font-extrabold tracking-tight mt-1">
+                  {event.title || 'MUIT Campus Event'}
+                </h2>
+              </div>
             </div>
-            
-            <div className="mt-3 text-center space-y-1.5 w-full">
-              <div className="flex items-center justify-center gap-2">
-                <span className="text-xs font-mono font-extrabold tracking-wider text-muit-900 bg-white px-3 py-1 rounded-lg border border-slate-200 shadow-sm">
-                  {registration.registrationId}
-                </span>
-                <button
-                  type="button"
-                  onClick={handleCopyId}
-                  className="p-1.5 text-xs text-slate-500 hover:text-muit-700 bg-white hover:bg-slate-100 rounded-lg border border-slate-200 shadow-sm transition-colors flex items-center gap-1"
-                  title="Copy Registration ID"
-                >
-                  {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-                  <span className="text-[10px] font-semibold">{copied ? 'Copied' : 'Copy'}</span>
-                </button>
+
+            {/* View Mode Toggle */}
+            <div className="inline-flex rounded-xl bg-white/10 p-1 backdrop-blur-sm self-start sm:self-auto border border-white/20">
+              <button
+                type="button"
+                onClick={() => setViewMode('wristband')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+                  viewMode === 'wristband'
+                    ? 'bg-rose-500 text-white shadow-sm'
+                    : 'text-pink-100 hover:text-white'
+                }`}
+              >
+                <Ticket className="w-3.5 h-3.5" />
+                <span>Festival Wristband Pass</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode('card')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+                  viewMode === 'card'
+                    ? 'bg-white text-slate-900 shadow-sm'
+                    : 'text-pink-100 hover:text-white'
+                }`}
+              >
+                <QRCodeSVG value="test" size={12} className="hidden" />
+                <span>Digital Pass Card</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Modal Body: Either Wristband or Card */}
+        {viewMode === 'wristband' ? (
+          <div className="p-4 sm:p-6 bg-slate-50/50">
+            <WristbandPass registration={registration} showActions={true} />
+          </div>
+        ) : (
+          <div>
+            {/* Standard Pass Body */}
+            <div ref={ticketRef} className="p-6 space-y-5">
+              
+              {/* QR Code Container */}
+              <div className="flex flex-col items-center justify-center p-5 bg-gradient-to-b from-blue-50/50 to-slate-50 rounded-2xl border-2 border-dashed border-muit-200">
+                <div className="bg-white p-3.5 rounded-2xl shadow-md border border-slate-200 flex items-center justify-center">
+                  <QRCodeSVG
+                    id={`qr-svg-${registration.registrationId}`}
+                    value={registration.registrationId}
+                    size={190}
+                    level="H"
+                    includeMargin={true}
+                    fgColor="#0f172a"
+                    bgColor="#ffffff"
+                  />
+                </div>
+                
+                <div className="mt-3 text-center space-y-1.5 w-full">
+                  <div className="flex items-center justify-center gap-2">
+                    <span className="text-xs font-mono font-extrabold tracking-wider text-muit-900 bg-white px-3 py-1 rounded-lg border border-slate-200 shadow-sm">
+                      {registration.registrationId}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleCopyId}
+                      className="p-1.5 text-xs text-slate-500 hover:text-muit-700 bg-white hover:bg-slate-100 rounded-lg border border-slate-200 shadow-sm transition-colors flex items-center gap-1"
+                      title="Copy Registration ID"
+                    >
+                      {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                      <span className="text-[10px] font-semibold">{copied ? 'Copied' : 'Copy'}</span>
+                    </button>
+                  </div>
+
+                  <p className="text-[11px] text-slate-500 font-medium">
+                    Scan with any QR scanner or show ID at the event entrance gate
+                  </p>
+                </div>
               </div>
 
-              <p className="text-[11px] text-slate-500 font-medium">
-                Scan with any QR scanner or enter ID at the event entrance gate
-              </p>
+              {/* Student & Event Info Grid */}
+              <div className="grid grid-cols-2 gap-3 text-xs bg-slate-50 p-4 rounded-2xl border border-slate-200/70">
+                <div>
+                  <p className="text-slate-400 font-medium">Student Name</p>
+                  <p className="font-bold text-slate-800 mt-0.5">
+                    {student.name || 'Aditya Jaiswal'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-slate-400 font-medium">Enrollment No.</p>
+                  <p className="font-bold text-slate-800 mt-0.5">
+                    {student.enrollmentNumber || 'MUIT/2026/REG'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-slate-400 font-medium">Date & Time</p>
+                  <p className="font-semibold text-slate-800 mt-0.5">
+                    {eventDate} • {event.startTime || '10:00 AM'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-slate-400 font-medium">Pass Status</p>
+                  <p className="mt-0.5 font-bold">
+                    {registration.status === 'Attended' ? (
+                      <span className="text-emerald-600 flex items-center gap-1">
+                        <ShieldCheck className="w-3.5 h-3.5" /> Checked In
+                      </span>
+                    ) : (
+                      <span className="text-emerald-600">● Confirmed Active Pass</span>
+                    )}
+                  </p>
+                </div>
+                <div className="col-span-2 pt-2 border-t border-slate-200/80">
+                  <p className="text-slate-400 font-medium">Venue</p>
+                  <p className="font-semibold text-slate-800 mt-0.5">
+                    {event.venue || 'MUIT Campus'}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-3">
+              <button
+                onClick={handleDownloadQR}
+                className="flex-1 py-2.5 px-4 rounded-xl text-xs font-bold text-muit-700 bg-white border border-muit-200 hover:bg-muit-50 transition-colors flex items-center justify-center gap-1.5 shadow-sm"
+              >
+                <Download className="w-3.5 h-3.5" />
+                Download Pass
+              </button>
+              <button
+                onClick={handlePrint}
+                className="flex-1 py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-muit-700 hover:bg-muit-800 transition-colors flex items-center justify-center gap-1.5 shadow"
+              >
+                <Printer className="w-3.5 h-3.5" />
+                Print Ticket
+              </button>
             </div>
           </div>
-
-          {/* Student & Event Info Grid */}
-          <div className="grid grid-cols-2 gap-3 text-xs bg-slate-50 p-4 rounded-2xl border border-slate-200/70">
-            <div>
-              <p className="text-slate-400 font-medium">Student Name</p>
-              <p className="font-bold text-slate-800 mt-0.5">
-                {student.name || 'Student Attendee'}
-              </p>
-            </div>
-            <div>
-              <p className="text-slate-400 font-medium">Enrollment No.</p>
-              <p className="font-bold text-slate-800 mt-0.5">
-                {student.enrollmentNumber || 'MUIT/2026/REG'}
-              </p>
-            </div>
-            <div>
-              <p className="text-slate-400 font-medium">Date & Time</p>
-              <p className="font-semibold text-slate-800 mt-0.5">
-                {eventDate} • {event.startTime || '10:00 AM'}
-              </p>
-            </div>
-            <div>
-              <p className="text-slate-400 font-medium">Pass Status</p>
-              <p className="mt-0.5 font-bold">
-                {registration.status === 'Attended' ? (
-                  <span className="text-emerald-600 flex items-center gap-1">
-                    <ShieldCheck className="w-3.5 h-3.5" /> Checked In
-                  </span>
-                ) : (
-                  <span className="text-blue-600">● Confirmed Active</span>
-                )}
-              </p>
-            </div>
-            <div className="col-span-2 pt-2 border-t border-slate-200/80">
-              <p className="text-slate-400 font-medium">Venue</p>
-              <p className="font-semibold text-slate-800 mt-0.5">
-                {event.venue || 'MUIT Campus'}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Modal Actions */}
-        <div className="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-3">
-          <button
-            onClick={handleDownloadQR}
-            className="flex-1 py-2.5 px-4 rounded-xl text-xs font-bold text-muit-700 bg-white border border-muit-200 hover:bg-muit-50 transition-colors flex items-center justify-center gap-1.5 shadow-sm"
-          >
-            <Download className="w-3.5 h-3.5" />
-            Download QR Pass
-          </button>
-          <button
-            onClick={handlePrint}
-            className="flex-1 py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-muit-700 hover:bg-muit-800 transition-colors flex items-center justify-center gap-1.5 shadow"
-          >
-            <Printer className="w-3.5 h-3.5" />
-            Print Ticket
-          </button>
-        </div>
+        )}
 
       </div>
     </div>

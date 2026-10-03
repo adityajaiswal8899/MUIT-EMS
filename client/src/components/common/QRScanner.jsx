@@ -186,8 +186,8 @@ const QRScanner = ({ events = [], onAttendanceMarked }) => {
 
   // Quick testing sample tickets
   const sampleTestTickets = [
-    { code: 'MUIT-REG-2026-TF001', student: 'Aarav Verma', event: 'Tech Fest 2026' },
-    { code: 'MUIT-REG-2026-AI002', student: 'Aarav Verma', event: 'AI Workshop' },
+    { code: 'MUIT-REG-2026-TF001', student: 'Aditya Jaiswal', event: 'Tech Fest 2026' },
+    { code: 'MUIT-REG-2026-AI002', student: 'Aditya Jaiswal', event: 'AI Workshop' },
     { code: 'MUIT-REG-2026-TF002', student: 'Priya Sharma', event: 'Tech Fest 2026' },
     { code: 'MUIT-REG-2026-TF003', student: 'Rohan Gupta', event: 'Tech Fest 2026' },
     { code: 'MUIT-REG-2026-TF004', student: 'Ananya Mishra', event: 'Tech Fest 2026' }

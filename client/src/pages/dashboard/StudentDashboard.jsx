@@ -44,8 +44,19 @@ const StudentDashboard = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Active tab state from URL or default to 'dashboard'
-  const initialTab = searchParams.get('tab') || 'dashboard';
-  const [activeTab, setActiveTab] = useState(initialTab);
+  const getNormalizedTab = (t) => {
+    if (t === 'qr' || t === 'passes' || t === 'my-qr') return 'my-qr';
+    return t || 'dashboard';
+  };
+  const [activeTab, setActiveTab] = useState(() => getNormalizedTab(searchParams.get('tab')));
+  const [passFilter, setPassFilter] = useState('all'); // 'all', 'active', 'attended'
+
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    if (tabParam) {
+      setActiveTab(getNormalizedTab(tabParam));
+    }
+  }, [searchParams]);
 
   // Data states
   const [loading, setLoading] = useState(true);
@@ -167,6 +178,45 @@ const StudentDashboard = () => {
     }
   };
 
+  const handleDownloadSingleQR = (reg) => {
+    const svgElement = document.getElementById(`qr-svg-card-${reg.registrationId}`);
+    if (svgElement) {
+      const svgData = new XMLSerializer().serializeToString(svgElement);
+      const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+      const URL = window.URL || window.webkitURL || window;
+      const blobURL = URL.createObjectURL(svgBlob);
+
+      const image = new Image();
+      image.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 400;
+        canvas.height = 400;
+        const context = canvas.getContext('2d');
+        context.fillStyle = '#ffffff';
+        context.fillRect(0, 0, 400, 400);
+        context.drawImage(image, 20, 20, 360, 360);
+
+        const png = canvas.toDataURL('image/png');
+        const downloadLink = document.createElement('a');
+        downloadLink.href = png;
+        downloadLink.download = `MUIT-PASS-${reg.registrationId}.png`;
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+        toast.success(`Pass ${reg.registrationId} downloaded!`);
+      };
+      image.src = blobURL;
+    } else if (reg.qrCode) {
+      const link = document.createElement('a');
+      link.href = reg.qrCode;
+      link.download = `MUIT-PASS-${reg.registrationId}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.success(`Pass ${reg.registrationId} downloaded!`);
+    }
+  };
+
   return (
     <div className="flex min-h-[calc(100vh-5rem)] bg-slate-50">
       
@@ -242,15 +292,21 @@ const StudentDashboard = () => {
                 <p className="text-[10px] text-slate-500">Ready to download</p>
               </div>
 
-              <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-1 col-span-2 md:col-span-1">
-                <div className="flex items-center justify-between text-slate-400">
+              <div 
+                onClick={() => handleTabChange('my-qr')}
+                className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-1 col-span-2 md:col-span-1 cursor-pointer hover:border-indigo-400 hover:shadow-md transition-all group"
+              >
+                <div className="flex items-center justify-between text-slate-400 group-hover:text-indigo-600 transition-colors">
                   <span className="text-xs font-bold uppercase">Active Passes</span>
-                  <Clock className="w-4 h-4 text-indigo-600" />
+                  <Ticket className="w-4 h-4 text-indigo-600" />
                 </div>
                 <div className="text-2xl font-extrabold text-indigo-600 font-display">
                   {activeRegistrations.length}
                 </div>
-                <p className="text-[10px] text-slate-500">QR active passes</p>
+                <p className="text-[10px] text-slate-500 flex items-center justify-between">
+                  <span>QR gate passes</span>
+                  <span className="text-indigo-600 font-bold group-hover:translate-x-0.5 transition-transform">View →</span>
+                </p>
               </div>
 
             </div>
@@ -305,10 +361,10 @@ const StudentDashboard = () => {
 
                         <button
                           onClick={() => setSelectedPass(reg)}
-                          className="px-4 py-2 rounded-xl bg-muit-700 hover:bg-muit-800 text-white font-bold text-xs shadow transition-all shrink-0 flex items-center gap-1.5"
+                          className="px-4 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700 text-white font-bold text-xs shadow-sm transition-all shrink-0 flex items-center gap-1.5"
                         >
-                          <Ticket className="w-3.5 h-3.5" />
-                          <span>Show QR Pass</span>
+                          <Ticket className="w-3.5 h-3.5 text-amber-300" />
+                          <span>Wristband & Pass</span>
                         </button>
                       </div>
                     ))}
@@ -557,79 +613,243 @@ const StudentDashboard = () => {
         {/* ================= TAB: MY QR PASS ================= */}
         {activeTab === 'my-qr' && (
           <div className="space-y-6">
-            <div>
-              <h1 className="text-2xl font-bold text-slate-900">My QR Event Passes</h1>
-              <p className="text-xs text-slate-500">Show these dynamic QR passes at the entrance gate for instant check-in.</p>
-            </div>
+            
+            {/* Header & Controls */}
+            <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 flex items-center gap-1.5">
+                      <Ticket className="w-3.5 h-3.5 text-emerald-600" />
+                      Digital Gate Access
+                    </span>
+                    <span className="px-2.5 py-0.5 text-[10px] font-bold rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                      Total Passes: {registrations.filter(r => r.status !== 'Cancelled').length}
+                    </span>
+                  </div>
+                  <h1 className="text-2xl font-display font-extrabold text-slate-900 mt-2">
+                    My QR Event Passes
+                  </h1>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Show these official dynamic QR passes at the entrance gate for instant 1-second check-in verification.
+                  </p>
+                </div>
 
-            {activeRegistrations.length === 0 ? (
-              <div className="text-center py-20 bg-white rounded-3xl border border-slate-200 p-8 space-y-3">
-                <Ticket className="w-12 h-12 text-slate-300 mx-auto" />
-                <h3 className="text-base font-bold text-slate-800">No Active Passes Available</h3>
-                <p className="text-xs text-slate-500">Register for an upcoming event to generate your digital gate pass.</p>
-                <Link to="/events" className="inline-block px-4 py-2 rounded-xl bg-muit-700 text-white text-xs font-bold">
-                  Explore Events
+                <Link
+                  to="/events"
+                  className="px-4 py-2.5 rounded-xl bg-muit-700 hover:bg-muit-800 text-white font-bold text-xs shadow-sm transition-all flex items-center gap-1.5 self-start sm:self-auto shrink-0"
+                >
+                  <Calendar className="w-4 h-4" />
+                  <span>Browse More Events</span>
                 </Link>
               </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {activeRegistrations.map((reg) => (
-                  <div
-                    key={reg._id}
-                    className="bg-white rounded-3xl border border-slate-200 shadow-md p-6 text-center space-y-4 hover:shadow-lg transition-shadow"
-                  >
-                    <div className="bg-muit-900 text-white p-3 rounded-2xl">
-                      <span className="text-[10px] uppercase font-bold tracking-wider text-blue-200">
-                        {reg.event?.category}
-                      </span>
-                      <h3 className="text-sm font-bold line-clamp-1 mt-0.5">{reg.event?.title}</h3>
-                    </div>
 
-                    <div className="p-4 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200 flex flex-col items-center">
-                      <div className="bg-white p-2.5 rounded-2xl shadow-sm border border-slate-200">
-                        <QRCodeSVG
-                          value={reg.registrationId}
-                          size={150}
-                          level="H"
-                          includeMargin={true}
-                          fgColor="#0f172a"
-                          bgColor="#ffffff"
-                        />
-                      </div>
-                      <div className="flex items-center gap-1.5 mt-2.5">
-                        <span className="text-xs font-mono font-bold text-slate-800 bg-white px-2.5 py-0.5 rounded border border-slate-200 shadow-sm">
-                          {reg.registrationId}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            navigator.clipboard.writeText(reg.registrationId);
-                            toast.success(`Pass ID ${reg.registrationId} copied!`);
-                          }}
-                          className="p-1 text-slate-400 hover:text-muit-700 bg-white hover:bg-slate-100 rounded border border-slate-200 transition-colors"
-                          title="Copy Pass ID"
-                        >
-                          <Copy className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="text-xs text-slate-500 space-y-0.5">
-                      <p className="font-semibold text-slate-800">{new Date(reg.event?.date).toLocaleDateString()}</p>
-                      <p className="truncate">{reg.event?.venue}</p>
-                    </div>
-
-                    <button
-                      onClick={() => setSelectedPass(reg)}
-                      className="w-full py-2.5 rounded-xl bg-muit-700 hover:bg-muit-800 text-white font-bold text-xs shadow flex items-center justify-center gap-1.5 transition-colors"
-                    >
-                      <Ticket className="w-3.5 h-3.5" />
-                      <span>Full Screen Pass & Download</span>
-                    </button>
-                  </div>
-                ))}
+              {/* Pass Filter Tabs */}
+              <div className="flex items-center gap-2 pt-2 border-t border-slate-100 overflow-x-auto">
+                <button
+                  type="button"
+                  onClick={() => setPassFilter('all')}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                    passFilter === 'all'
+                      ? 'bg-slate-900 text-white shadow-sm'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  All Passes ({registrations.filter(r => r.status !== 'Cancelled').length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPassFilter('active')}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                    passFilter === 'active'
+                      ? 'bg-emerald-600 text-white shadow-sm'
+                      : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+                  }`}
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  Active / Upcoming ({activeRegistrations.length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPassFilter('attended')}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                    passFilter === 'attended'
+                      ? 'bg-blue-600 text-white shadow-sm'
+                      : 'bg-blue-50 text-blue-700 hover:bg-blue-100'
+                  }`}
+                >
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  Attended / Past ({attendedRegistrations.length})
+                </button>
               </div>
-            )}
+            </div>
+
+            {/* Passes Content */}
+            {(() => {
+              const displayedPasses = registrations.filter((r) => {
+                if (r.status === 'Cancelled') return false;
+                if (passFilter === 'active') return r.status === 'Registered';
+                if (passFilter === 'attended') return r.status === 'Attended';
+                return true;
+              });
+
+              if (displayedPasses.length === 0) {
+                return (
+                  <div className="text-center py-20 bg-white rounded-3xl border border-slate-200 p-8 space-y-3">
+                    <Ticket className="w-12 h-12 text-slate-300 mx-auto" />
+                    <h3 className="text-base font-bold text-slate-800">
+                      {passFilter === 'active'
+                        ? 'No Active Upcoming Passes'
+                        : passFilter === 'attended'
+                        ? 'No Attended Passes Recorded Yet'
+                        : 'No Event Passes Found'}
+                    </h3>
+                    <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                      {passFilter === 'active'
+                        ? 'Register for an upcoming campus event to generate your dynamic QR gate pass.'
+                        : passFilter === 'attended'
+                        ? 'When organizers scan your QR pass at event gates, your passes will be archived here.'
+                        : 'Explore campus events and claim your free digital passes.'}
+                    </p>
+                    <Link
+                      to="/events"
+                      className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-muit-700 hover:bg-muit-800 text-white text-xs font-bold shadow-sm transition-all"
+                    >
+                      <Calendar className="w-4 h-4" />
+                      <span>Explore Campus Events</span>
+                    </Link>
+                  </div>
+                );
+              }
+
+              return (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {displayedPasses.map((reg) => {
+                    const isAttended = reg.status === 'Attended';
+                    return (
+                      <div
+                        key={reg._id}
+                        className={`bg-white rounded-3xl border shadow-md hover:shadow-xl transition-all overflow-hidden flex flex-col justify-between ${
+                          isAttended ? 'border-slate-200 opacity-95' : 'border-emerald-200/80 ring-1 ring-emerald-500/20'
+                        }`}
+                      >
+                        {/* Ticket Top Ribbon / Mini Wristband Header */}
+                        <div className={`p-3.5 text-white relative overflow-hidden ${
+                          isAttended ? 'bg-gradient-to-r from-slate-800 to-slate-700' : 'bg-gradient-to-r from-[#e6005c] via-[#f41f7a] to-[#d60050]'
+                        }`}>
+                          {/* Decorative Guilloché Watermark */}
+                          <div className="absolute right-0 top-0 bottom-0 w-24 opacity-15 pointer-events-none flex items-center justify-center">
+                            <svg viewBox="0 0 100 100" className="w-20 h-20 stroke-white fill-none stroke-[1]">
+                              <circle cx="50" cy="50" r="40" />
+                              <circle cx="50" cy="50" r="25" />
+                              <ellipse cx="50" cy="50" rx="38" ry="18" />
+                            </svg>
+                          </div>
+
+                          <div className="flex items-center justify-between gap-2 mb-1 z-10 relative">
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-[9px] font-black uppercase tracking-wider text-amber-300">
+                                PASS ✳✳
+                              </span>
+                              <span className="text-[9px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-black/25 text-pink-100">
+                                {reg.event?.category || 'MUIT Event'}
+                              </span>
+                            </div>
+                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 ${
+                              isAttended ? 'bg-emerald-400 text-slate-950' : 'bg-white/20 text-white'
+                            }`}>
+                              {isAttended ? (
+                                <>
+                                  <CheckCircle2 className="w-3 h-3" />
+                                  <span>Checked In</span>
+                                </>
+                              ) : (
+                                <>
+                                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                                  <span>Gate Entry Band</span>
+                                </>
+                              )}
+                            </span>
+                          </div>
+
+                          <h3 className="text-sm font-black italic tracking-tight line-clamp-1 leading-snug z-10 relative">
+                            {reg.event?.title?.toUpperCase().includes('AAGAAZ') ? 'AAGAAZ 2K26' : reg.event?.title || 'Campus Event'}
+                          </h3>
+                        </div>
+
+                        {/* Ticket QR Section */}
+                        <div className="p-6 text-center space-y-4">
+                          <div className="p-4 bg-gradient-to-b from-slate-50 to-white rounded-2xl border-2 border-dashed border-slate-200 flex flex-col items-center">
+                            <div className="bg-white p-3 rounded-2xl shadow-sm border border-slate-200">
+                              <QRCodeSVG
+                                id={`qr-svg-card-${reg.registrationId}`}
+                                value={reg.registrationId}
+                                size={150}
+                                level="H"
+                                includeMargin={true}
+                                fgColor="#0f172a"
+                                bgColor="#ffffff"
+                              />
+                            </div>
+
+                            {/* Pass ID with Copy Button */}
+                            <div className="flex items-center gap-1.5 mt-3">
+                              <span className="text-xs font-mono font-bold text-slate-800 bg-white px-2.5 py-0.5 rounded-lg border border-slate-200 shadow-sm">
+                                {reg.registrationId}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  navigator.clipboard.writeText(reg.registrationId);
+                                  toast.success(`Pass ID ${reg.registrationId} copied!`);
+                                }}
+                                className="p-1 text-slate-400 hover:text-muit-700 bg-white hover:bg-slate-100 rounded-lg border border-slate-200 transition-colors"
+                                title="Copy Pass ID"
+                              >
+                                <Copy className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Event Metadata */}
+                          <div className="text-xs text-slate-500 space-y-1 text-left bg-slate-50 p-3.5 rounded-xl border border-slate-100">
+                            <div className="flex items-center gap-1.5 text-slate-700 font-semibold truncate">
+                              <Calendar className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                              <span>{reg.event?.date ? new Date(reg.event.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }) : 'Upcoming'} • {reg.event?.startTime || '10:00 AM'}</span>
+                            </div>
+                            <div className="flex items-center gap-1.5 text-slate-600 truncate">
+                              <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                              <span className="truncate">{reg.event?.venue || 'MUIT Campus'}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="p-4 pt-0 space-y-2">
+                          <button
+                            type="button"
+                            onClick={() => setSelectedPass(reg)}
+                            className="w-full py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700 text-white font-bold text-xs shadow-sm flex items-center justify-center gap-1.5 transition-all"
+                          >
+                            <Ticket className="w-3.5 h-3.5 text-amber-300" />
+                            <span>View Wristband Entry Pass</span>
+                          </button>
+                          
+                          <button
+                            type="button"
+                            onClick={() => handleDownloadSingleQR(reg)}
+                            className="w-full py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors border border-slate-200"
+                          >
+                            <Download className="w-3.5 h-3.5" />
+                            <span>Download Pass PNG</span>
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })()}
           </div>
         )}
 

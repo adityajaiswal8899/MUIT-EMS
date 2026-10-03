@@ -131,7 +131,7 @@ const ContactPage = () => {
                   <input
                     type="text"
                     required
-                    placeholder="e.g. Aarav Verma"
+                    placeholder="e.g. Aditya Jaiswal"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-muit-600"
